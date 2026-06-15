@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor targets so the fixed header doesn't cover section tops */
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-ink text-bone font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Respect reduced-motion: kill smooth scroll + animation */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  /* Visible focus ring for keyboard users across all interactive elements */
+  :focus-visible {
+    @apply outline-none ring-2 ring-brass ring-offset-2 ring-offset-ink;
+  }
+
+  ::selection {
+    @apply bg-brass/30 text-bone;
+  }
+}
+
+@layer components {
+  /* Serif display headline — all caps, tight tracking, generous leading */
+  .display-heading {
+    @apply font-serif uppercase tracking-display leading-[1.05];
+  }
+
+  .eyebrow {
+    @apply font-sans text-xs font-medium uppercase tracking-[0.25em] text-brass;
+  }
+
+  .pull-quote {
+    @apply font-serif italic text-bone/90;
+  }
+
+  .body-copy {
+    @apply text-bone-muted leading-relaxed;
+  }
+}
