@@ -1,0 +1,646 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>WATCHMEN — Welcome to the Watchmen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#08090a; --panel:#0e0f11;
+    --steel:#c8ccd2; --steel-dim:#7d828b;
+    --gold:#c9a86a; --gold-bright:#e7c873;
+    --text:#f4f0e6; --muted:#9a958a;
+    --sapphire:#3a6ea5;
+    --serif:"Playfair Display",Georgia,serif;
+    --sans:"Inter",system-ui,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 1.5rem}
+
+  /* ---------- grain + vignette overlays ---------- */
+  .grain,.vignette{position:fixed;inset:0;pointer-events:none;z-index:60}
+  .vignette{background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+  .grain{opacity:.05;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+
+  /* ---------- loader ---------- */
+  #loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;transition:opacity .8s ease,visibility .8s}
+  #loader.done{opacity:0;visibility:hidden}
+  .load-dial{position:relative;width:96px;height:96px}
+  .load-dial svg{transform:rotate(-90deg)}
+  .load-dial .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.8rem;color:var(--gold)}
+  .load-cap{font-family:var(--mono);font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted)}
+
+  /* ---------- header ---------- */
+  header{position:fixed;top:0;left:0;right:0;z-index:50;height:4.5rem;display:flex;align-items:center;transition:background .4s,border-color .4s;border-bottom:1px solid transparent}
+  header.solid{background:rgba(8,9,10,.7);backdrop-filter:blur(10px);border-bottom:1px solid rgba(201,168,106,.15)}
+  .hrow{display:flex;align-items:center;justify-content:space-between;width:100%}
+  .logo{display:flex;align-items:center;gap:.6rem;font-family:var(--serif);font-size:1.05rem;letter-spacing:.28em;text-transform:uppercase}
+  .logo .crest{color:var(--gold)}
+  .htag{font-family:var(--mono);font-size:.62rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);display:none}
+  @media(min-width:760px){.htag{display:block}}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden}
+  .hero .floaters{position:absolute;inset:0;pointer-events:none}
+  .hero .floaters svg{position:absolute;opacity:.10;color:var(--steel-dim)}
+  .hero-inner{position:relative;z-index:2;padding:6rem 1.5rem}
+  .kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.45em;text-transform:uppercase;color:var(--gold);margin-bottom:1.6rem}
+  .hero h1{font-family:var(--serif);font-weight:600;line-height:.98;font-size:clamp(2.6rem,9vw,7rem);letter-spacing:.01em}
+  .hero h1 .it{font-style:italic;color:var(--gold-bright)}
+  .hero .sub{margin-top:1.6rem;font-size:clamp(.95rem,2.4vw,1.15rem);color:var(--muted);letter-spacing:.02em}
+  .scrollcue{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:2;font-family:var(--mono);font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:.6rem}
+  .scrollcue .line{width:1px;height:46px;background:linear-gradient(var(--gold),transparent);animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scaleY(.7)}50%{opacity:1;transform:scaleY(1)}}
+
+  /* ---------- assembly stage ---------- */
+  #stageWrap{position:relative;height:640vh}
+  #stagePin{position:sticky;top:0;height:100svh;overflow:hidden}
+  #scene{display:block;width:100%;height:100%}
+  .stage-head{position:absolute;top:5.5rem;left:0;right:0;text-align:center;z-index:3;pointer-events:none}
+  .stage-head .eg{font-family:var(--mono);font-size:.62rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold)}
+  .stage-head h2{font-family:var(--serif);font-size:clamp(1.4rem,3.2vw,2.2rem);font-weight:500;margin-top:.4rem;color:var(--text);opacity:.92}
+  .readout{position:absolute;left:50%;transform:translateX(-50%);bottom:2.4rem;z-index:3;width:min(560px,90vw);pointer-events:none}
+  .readout .bar{height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,106,.5),transparent);margin-bottom:.9rem}
+  .readout .line{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;color:var(--muted)}
+  .readout .pname{color:var(--gold-bright);text-transform:uppercase;letter-spacing:.22em}
+  .readout .spec{color:var(--steel-dim)}
+  .progress{position:absolute;right:1.4rem;top:50%;transform:translateY(-50%);z-index:3;display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.58rem;color:var(--muted)}
+  .progress .track{width:2px;height:38vh;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;position:relative}
+  .progress .fill{position:absolute;top:0;left:0;right:0;height:0%;background:linear-gradient(var(--gold-bright),var(--gold))}
+  @media(max-width:640px){.progress{display:none}}
+  .drag-hint{position:absolute;left:50%;transform:translateX(-50%);bottom:5.6rem;z-index:3;font-family:var(--mono);font-size:.58rem;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);opacity:0;transition:opacity .6s}
+
+  /* ---------- spec section ---------- */
+  .spec{padding:9rem 0;position:relative}
+  .spec .eg{font-family:var(--mono);font-size:.65rem;letter-spacing:.4em;text-transform:uppercase;color:var(--gold);text-align:center}
+  .spec h2{font-family:var(--serif);font-weight:500;font-size:clamp(2rem,5vw,3.4rem);text-align:center;margin-top:.8rem}
+  .spec .lead{max-width:46ch;margin:1.4rem auto 0;text-align:center;color:var(--muted);font-size:1.05rem}
+  .specgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;margin-top:4rem;border-top:1px solid rgba(201,168,106,.18)}
+  @media(min-width:760px){.specgrid{grid-template-columns:repeat(3,1fr)}}
+  .specitem{padding:1.6rem 1.2rem;border-bottom:1px solid rgba(255,255,255,.06);border-right:1px solid rgba(255,255,255,.06)}
+  .specitem .k{font-family:var(--mono);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--steel-dim)}
+  .specitem .v{font-family:var(--serif);font-size:1.5rem;color:var(--text);margin-top:.5rem}
+
+  /* ---------- CTA ---------- */
+  .cta{padding:8rem 0 10rem;text-align:center;position:relative}
+  .cta h2{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,6vw,4rem)}
+  .cta p{color:var(--muted);margin-top:1.2rem}
+  .joinform{margin:2.6rem auto 0;display:flex;gap:.6rem;max-width:440px;flex-wrap:wrap;justify-content:center}
+  .joinform input{flex:1 1 220px;background:var(--panel);border:1px solid rgba(255,255,255,.14);border-radius:2px;color:var(--text);padding:.95rem 1.1rem;font-family:var(--sans);font-size:.95rem}
+  .joinform input:focus{outline:none;border-color:var(--gold)}
+  .btn{background:var(--gold);color:#0b0b0b;border:0;border-radius:2px;padding:.95rem 1.8rem;font-family:var(--mono);font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .3s,transform .3s}
+  .btn:hover{background:var(--gold-bright);transform:translateY(-2px)}
+  .fineprint{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;color:var(--steel-dim);margin-top:1.4rem;text-transform:uppercase}
+  footer{border-top:1px solid rgba(255,255,255,.07);padding:2.2rem 0;text-align:center;font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:var(--steel-dim);text-transform:uppercase}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  .nowebgl{display:none}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .scrollcue .line{animation:none}
+    #stageWrap{height:100svh}
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<div class="vignette"></div>
+
+<!-- ===== LOADER ===== -->
+<div id="loader">
+  <div class="load-dial">
+    <svg width="96" height="96" viewBox="0 0 96 96">
+      <circle cx="48" cy="48" r="42" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="2"/>
+      <circle id="loadArc" cx="48" cy="48" r="42" fill="none" stroke="#c9a86a" stroke-width="2" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
+    </svg>
+    <div class="pct" id="loadPct">0%</div>
+  </div>
+  <div class="load-cap">Calibrating Caliber WM-01</div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header id="hdr">
+  <div class="wrap hrow">
+    <div class="logo"><span class="crest">&#9673;</span> Watchmen</div>
+    <div class="htag">Caliber WM-01 · Hand-Assembled</div>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="floaters" id="floaters"></div>
+  <div class="hero-inner">
+    <div class="kicker reveal">Precision · Movement · Legacy</div>
+    <h1 class="reveal">Welcome to the<br><span class="it">Watchmen</span></h1>
+    <p class="sub reveal">Precision is a discipline. Time is the proof.</p>
+  </div>
+  <div class="scrollcue"><span>Scroll to assemble</span><span class="line"></span></div>
+</section>
+
+<!-- ===== ASSEMBLY STAGE ===== -->
+<section id="stageWrap">
+  <div id="stagePin">
+    <canvas id="scene"></canvas>
+    <div class="stage-head">
+      <div class="eg">The Assembly</div>
+      <h2 id="phaseTitle">A movement, built before your eyes</h2>
+    </div>
+    <div class="progress"><span>00</span><div class="track"><div class="fill" id="progFill"></div></div><span id="progNum">00</span></div>
+    <div class="drag-hint" id="dragHint">Drag to inspect</div>
+    <div class="readout">
+      <div class="bar"></div>
+      <div class="line"><span class="pname" id="partName">Mainplate</span><span class="spec" id="partSpec">tol. ±0.002 mm</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SPEC ===== -->
+<section class="spec">
+  <div class="wrap">
+    <div class="eg reveal">The Caliber</div>
+    <h2 class="reveal">Engineering, worn as art.</h2>
+    <p class="lead reveal">No shortcuts. No borrowed parts. Every WATCHMEN is regulated by hand and held to tolerances most eyes will never see — but every wrist will feel.</p>
+    <div class="specgrid">
+      <div class="specitem reveal"><div class="k">Caliber</div><div class="v">WM-01</div></div>
+      <div class="specitem reveal"><div class="k">Winding</div><div class="v">Automatic</div></div>
+      <div class="specitem reveal"><div class="k">Frequency</div><div class="v">28,800 vph</div></div>
+      <div class="specitem reveal"><div class="k">Power Reserve</div><div class="v">70 hours</div></div>
+      <div class="specitem reveal"><div class="k">Jewels</div><div class="v">31</div></div>
+      <div class="specitem reveal"><div class="k">Case</div><div class="v">904L-grade steel</div></div>
+      <div class="specitem reveal"><div class="k">Crystal</div><div class="v">Sapphire, AR-coated</div></div>
+      <div class="specitem reveal"><div class="k">Water Resistance</div><div class="v">100 m</div></div>
+      <div class="specitem reveal"><div class="k">Assembly</div><div class="v">By hand</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section class="cta" id="join">
+  <div class="wrap">
+    <h2 class="reveal">Join the Watchmen.</h2>
+    <p class="reveal">A limited release. An invitation, not a purchase. Leave your address for first access.</p>
+    <form class="joinform reveal" onsubmit="event.preventDefault(); this.innerHTML='<p style=&quot;font-family:var(--mono);letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-size:.8rem&quot;>You\'re on the list. Welcome.</p>';">
+      <input type="email" placeholder="your@email.com" required aria-label="Email address" />
+      <button class="btn" type="submit">Request Access</button>
+    </form>
+    <div class="fineprint reveal">gy6.me · Caliber WM-01 · MMXXVI</div>
+  </div>
+</section>
+<footer>© <span id="yr"></span> WATCHMEN — All Rights Reserved · Design by Skyway.Media</footer>
+
+<!-- fallback message if WebGL unavailable -->
+<noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#08090a;color:#c9a86a;font-family:monospace">Enable JavaScript to view the WATCHMEN assembly.</div></noscript>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- header solidify + reveals ---------- */
+  var hdr = document.getElementById('hdr');
+  addEventListener('scroll', function(){ hdr.classList.toggle('solid', scrollY > 30); }, {passive:true});
+  var io = new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.15});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el);});
+
+  /* ---------- hero floating gears (scroll-driven parallax) ---------- */
+  (function(){
+    var box = document.getElementById('floaters');
+    function gearSVG(size){
+      return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3">'
+        +'<circle cx="50" cy="50" r="20"/><circle cx="50" cy="50" r="6"/>'
+        +Array.from({length:10}).map(function(_,i){var a=i*36*Math.PI/180;var x1=50+Math.cos(a)*20,y1=50+Math.sin(a)*20,x2=50+Math.cos(a)*30,y2=50+Math.sin(a)*30;return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'"/>';}).join('')
+        +'</svg>';
+    }
+    var defs=[[80,'8%','18%',.04],[140,'78%','24%',.07],[60,'14%','68%',.05],[110,'86%','72%',.06],[48,'46%','12%',.03]];
+    defs.forEach(function(d){
+      var el=document.createElement('div');
+      el.style.cssText='position:absolute;left:'+d[1]+';top:'+d[2]+';color:#7d828b;';
+      el.innerHTML=gearSVG(d[0]); el.dataset.sp=d[3];
+      box.appendChild(el);
+    });
+    if(!reduce) addEventListener('scroll',function(){
+      var y=scrollY;
+      box.querySelectorAll('div').forEach(function(el){
+        el.style.transform='translateY('+(y*el.dataset.sp*-1)+'px) rotate('+(y*el.dataset.sp*0.6)+'deg)';
+      });
+    },{passive:true});
+  })();
+
+  /* ---------- THREE.JS SCENE ---------- */
+  var canvas = document.getElementById('scene');
+  var gl;
+  try { gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl'); } catch(e){}
+  if(!gl){
+    // WebGL fallback: hide canvas, show static note
+    document.getElementById('stageWrap').style.height='100svh';
+    document.getElementById('phaseTitle').textContent='Caliber WM-01';
+    canvas.style.background='radial-gradient(ellipse at 50% 40%,#15161a,#08090a)';
+    finishLoader();
+    return;
+  }
+
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(34, 1, 0.1, 2000);
+  camera.position.set(0,0,150);
+
+  /* environment map from a procedural gradient → gives metals real reflections */
+  (function(){
+    var c=document.createElement('canvas');c.width=64;c.height=256;var x=c.getContext('2d');
+    var g=x.createLinearGradient(0,0,0,256);
+    g.addColorStop(0,'#3a3d44');g.addColorStop(0.45,'#101113');g.addColorStop(0.5,'#1c1d20');
+    g.addColorStop(0.55,'#0c0d0e');g.addColorStop(0.78,'#2a2622');g.addColorStop(0.82,'#c9a86a');g.addColorStop(1,'#070708');
+    x.fillStyle=g;x.fillRect(0,0,64,256);
+    // a warm gold glow band (key light reflection)
+    var gg=x.createRadialGradient(32,70,2,32,70,40);gg.addColorStop(0,'rgba(231,200,115,.9)');gg.addColorStop(1,'rgba(231,200,115,0)');
+    x.fillStyle=gg;x.fillRect(0,30,64,90);
+    var tex=new THREE.CanvasTexture(c);tex.mapping=THREE.EquirectangularReflectionMapping;tex.encoding=THREE.sRGBEncoding;
+    var pmrem=new THREE.PMREMGenerator(renderer);pmrem.compileEquirectangularShader();
+    scene.environment=pmrem.fromEquirectangular(tex).texture;
+    tex.dispose();pmrem.dispose();
+  })();
+
+  /* lights */
+  scene.add(new THREE.AmbientLight(0x404654, 0.5));
+  var key = new THREE.DirectionalLight(0xfff2d8, 1.6); key.position.set(40,60,80); scene.add(key);
+  var rim = new THREE.DirectionalLight(0xc9a86a, 1.1); rim.position.set(-60,-20,30); scene.add(rim);
+  var sweep = new THREE.PointLight(0xe7c873, 0.0, 400); sweep.position.set(0,0,120); scene.add(sweep);
+  var fill = new THREE.PointLight(0x3a6ea5, 0.35, 500); fill.position.set(-40,30,60); scene.add(fill);
+
+  /* materials */
+  function steel(){ return new THREE.MeshStandardMaterial({color:0xb9bec6, metalness:1.0, roughness:0.28, envMapIntensity:1.2}); }
+  function steelDark(){ return new THREE.MeshStandardMaterial({color:0x6b7079, metalness:1.0, roughness:0.42, envMapIntensity:1.0}); }
+  function brass(){ return new THREE.MeshStandardMaterial({color:0xcBa86a, metalness:1.0, roughness:0.30, envMapIntensity:1.25}); }
+  function goldMat(){ return new THREE.MeshStandardMaterial({color:0xe7c873, metalness:1.0, roughness:0.22, envMapIntensity:1.4}); }
+  function blued(){ return new THREE.MeshStandardMaterial({color:0x2c4a7a, metalness:1.0, roughness:0.18, envMapIntensity:1.5}); }
+  function ruby(){ return new THREE.MeshStandardMaterial({color:0x9b1d3a, metalness:0.2, roughness:0.15, emissive:0x3a0010, envMapIntensity:1.0}); }
+
+  /* group that holds the whole watch */
+  var watch = new THREE.Group(); scene.add(watch);
+  watch.rotation.x = -0.18; // slight tilt so the movement reads as 3/4 early
+
+  /* parts registry: each {obj, win:[a,b], from:{...}, spin, mode} */
+  var parts = [];
+  function addPart(obj, win, from, opts){
+    obj.userData.win = win;
+    obj.userData.from = from || {};
+    obj.userData.opts = opts || {};
+    // make transparent for fade-in
+    obj.traverse(function(m){ if(m.material){ m.material.transparent=true; } });
+    obj.userData.baseRot = {x:obj.rotation.x,y:obj.rotation.y,z:obj.rotation.z};
+    obj.userData.basePos = {x:obj.position.x,y:obj.position.y,z:obj.position.z};
+    parts.push(obj);
+    watch.add(obj);
+    return obj;
+  }
+
+  /* ----- involute-ish gear geometry ----- */
+  function gearGeo(teeth, rPitch, toothH, thick, holeR){
+    var s = new THREE.Shape();
+    var rO = rPitch + toothH*0.5, rR = rPitch - toothH*0.5;
+    var step = Math.PI*2/teeth;
+    for(var i=0;i<teeth;i++){
+      var a=i*step;
+      var p0=[rR*Math.cos(a), rR*Math.sin(a)];
+      var p1=[rO*Math.cos(a+step*0.2), rO*Math.sin(a+step*0.2)];
+      var p2=[rO*Math.cos(a+step*0.4), rO*Math.sin(a+step*0.4)];
+      var p3=[rR*Math.cos(a+step*0.6), rR*Math.sin(a+step*0.6)];
+      if(i===0) s.moveTo(p0[0],p0[1]); else s.lineTo(p0[0],p0[1]);
+      s.lineTo(p1[0],p1[1]); s.lineTo(p2[0],p2[1]); s.lineTo(p3[0],p3[1]);
+    }
+    s.closePath();
+    if(holeR>0){ var h=new THREE.Path(); h.absarc(0,0,holeR,0,Math.PI*2,true); s.holes.push(h); }
+    var g = new THREE.ExtrudeGeometry(s,{depth:thick,bevelEnabled:true,bevelSize:0.25,bevelThickness:0.25,bevelSegments:2,steps:1,curveSegments:24});
+    g.translate(0,0,-thick/2);
+    g.computeVertexNormals();
+    return g;
+  }
+  function makeGear(teeth,rPitch,toothH,thick,holeR,mat){
+    var m=new THREE.Mesh(gearGeo(teeth,rPitch,toothH,thick,holeR),mat);
+    // spokes / arms for realism
+    var arms=new THREE.Group();
+    var nArms=teeth>30?5:4;
+    for(var i=0;i<nArms;i++){
+      var bar=new THREE.Mesh(new THREE.BoxGeometry(rPitch*0.82, toothH*0.9, thick*0.6), mat);
+      bar.rotation.z = i*Math.PI/nArms; arms.add(bar);
+    }
+    var hub=new THREE.Mesh(new THREE.CylinderGeometry(holeR*1.7,holeR*1.7,thick*1.1,20),mat);
+    hub.rotation.x=Math.PI/2; arms.add(hub);
+    var grp=new THREE.Group(); grp.add(m); grp.add(arms);
+    return grp;
+  }
+
+  var Z = {plate:0, train:3.5, escape:3.5, bridge:7, dial:12, hands:15.5, case:0, bezel:18, crystal:20};
+
+  /* ===== PHASE 1: MAINPLATE ===== */
+  (function(){
+    var plate = new THREE.Mesh(new THREE.CylinderGeometry(46,46,3,72), steelDark());
+    plate.rotation.x=Math.PI/2; plate.position.z=Z.plate;
+    // jewel holes (visual sinks)
+    var holes=new THREE.Group();
+    var holePos=[[0,0],[18,6],[-14,16],[-22,-10],[10,-20],[24,-6],[-4,24],[16,22],[-26,4]];
+    holePos.forEach(function(p){
+      var s=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,3.4,16), new THREE.MeshStandardMaterial({color:0x0a0a0b,metalness:0.6,roughness:0.6}));
+      s.rotation.x=Math.PI/2; s.position.set(p[0],p[1],Z.plate); holes.add(s);
+    });
+    var grp=new THREE.Group(); grp.add(plate); grp.add(holes);
+    addPart(grp,[0.00,0.12],{pos:{z:90},rot:{z:-0.6}});
+  })();
+
+  /* ===== PHASE 2: GEAR TRAIN ===== */
+  var trainGears=[];
+  function trainGear(teeth,r,x,y,mat,speed,winA){
+    var g=makeGear(teeth,r,2.6,2.2,2.2,mat);
+    g.position.set(x,y,Z.train);
+    addPart(g,[winA,winA+0.1],{pos:{z:70,x:x+ (x>0?30:-30)},rot:{z:1.4}}, {spin:speed});
+    trainGears.push(g); return g;
+  }
+  // barrel (mainspring housing) — large
+  (function(){
+    var barrel=makeGear(56,24,3.0,3.4,4,brass());
+    barrel.position.set(-20,8,Z.train);
+    var lid=new THREE.Mesh(new THREE.CylinderGeometry(20,20,1.2,48),brass());
+    lid.rotation.x=Math.PI/2; lid.position.z=2; barrel.add(lid);
+    addPart(barrel,[0.10,0.20],{pos:{z:80,x:-50},rot:{z:1.6}},{spin:0.18});
+    trainGears.push(barrel);
+  })();
+  trainGear(40,17,9,-2,steel(),-0.30,0.15);     // center wheel
+  trainGear(32,13,26,-12,steel(),0.46,0.18);    // third wheel
+  trainGear(26,10,18,12,steel(),-0.62,0.20);    // fourth wheel
+
+  /* ===== PHASE 3: ESCAPEMENT & BALANCE ===== */
+  var escapeWheel, balance, palletFork;
+  (function(){
+    escapeWheel=makeGear(20,7.5,2.0,2,1.6,steel());
+    escapeWheel.position.set(30,2,Z.escape);
+    addPart(escapeWheel,[0.26,0.34],{pos:{z:60},rot:{z:2}},{spin:1.4});
+    // pallet fork
+    palletFork=new THREE.Group();
+    var arm=new THREE.Mesh(new THREE.BoxGeometry(11,2,1.6),steel());
+    var jewel1=new THREE.Mesh(new THREE.BoxGeometry(1.6,2.4,2),ruby()); jewel1.position.set(5,0,0);
+    var jewel2=new THREE.Mesh(new THREE.BoxGeometry(1.6,2.4,2),ruby()); jewel2.position.set(-5,0,0);
+    palletFork.add(arm,jewel1,jewel2); palletFork.position.set(34,8,Z.escape+1);
+    addPart(palletFork,[0.30,0.38],{pos:{z:60}},{oscillate:{amp:0.18,w:9}});
+    // balance wheel (big oscillator)
+    balance=new THREE.Group();
+    var ring=new THREE.Mesh(new THREE.TorusGeometry(11,1.1,12,48),goldMat());
+    var sp1=new THREE.Mesh(new THREE.BoxGeometry(22,1.4,1.4),goldMat());
+    var sp2=sp1.clone(); sp2.rotation.z=Math.PI/2;
+    var hair=new THREE.Mesh(new THREE.TorusGeometry(6,0.25,8,40),blued());
+    balance.add(ring,sp1,sp2,hair); balance.position.set(34,20,Z.escape+2);
+    addPart(balance,[0.34,0.42],{pos:{z:64},rot:{z:2.4}},{oscillate:{amp:0.9,w:9}});
+  })();
+
+  /* ===== PHASE 4: JEWELS & SCREWS ===== */
+  (function(){
+    var jewelPos=[[0,0],[18,6],[-14,16],[-22,-10],[10,-20],[24,-6],[-4,24],[16,22],[-26,4],[30,2],[9,-2],[26,-12]];
+    jewelPos.forEach(function(p,i){
+      var j=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.7,1.6,16),ruby());
+      j.rotation.x=Math.PI/2; j.position.set(p[0],p[1],Z.train+2.4);
+      var w=0.40+ (i/jewelPos.length)*0.06;
+      addPart(j,[w,w+0.05],{pos:{z:40},scale:0.1});
+    });
+    // blued screws around plate edge + bridges
+    var n=22;
+    for(var i=0;i<n;i++){
+      var a=i/n*Math.PI*2; var rr= (i%2? 40: 30);
+      var sc=new THREE.Group();
+      var head=new THREE.Mesh(new THREE.CylinderGeometry(1.7,1.7,1.0,18),blued()); head.rotation.x=Math.PI/2;
+      var slot=new THREE.Mesh(new THREE.BoxGeometry(2.8,0.5,0.6),new THREE.MeshStandardMaterial({color:0x0a0a0b,metalness:.4,roughness:.6})); slot.position.z=0.6;
+      var shaft=new THREE.Mesh(new THREE.CylinderGeometry(1.0,1.0,3,12),steelDark()); shaft.rotation.x=Math.PI/2; shaft.position.z=-1.6;
+      sc.add(head,slot,shaft);
+      sc.position.set(Math.cos(a)*rr, Math.sin(a)*rr, Z.train+2.2);
+      var w=0.42+ (i/n)*0.11;
+      addPart(sc,[w,w+0.06],{pos:{z:45},rot:{z:-6}},{threadSpin:true});
+    }
+  })();
+
+  /* ===== PHASE 5: ROTOR ===== */
+  (function(){
+    var rotor=new THREE.Group();
+    var seg=new THREE.Mesh(new THREE.CylinderGeometry(40,40,2.4,64,1,false,0,Math.PI),brass());
+    seg.rotation.x=Math.PI/2;
+    var weight=new THREE.Mesh(new THREE.TorusGeometry(34,4,12,40,Math.PI),goldMat());
+    weight.rotation.x=Math.PI/2;
+    var hubR=new THREE.Mesh(new THREE.CylinderGeometry(5,5,3,24),steel()); hubR.rotation.x=Math.PI/2;
+    // engraved bridge bar
+    var bar=new THREE.Mesh(new THREE.BoxGeometry(70,7,1.5),brass()); bar.position.z=1.5;
+    rotor.add(seg,weight,hubR,bar);
+    rotor.position.set(0,0,Z.bridge);
+    addPart(rotor,[0.55,0.66],{pos:{z:64},rot:{z:-2.6}},{spin:0.5});
+  })();
+
+  /* ===== PHASE 6: DIAL ===== */
+  (function(){
+    // canvas dial texture: dark sunburst, baton indices, WATCHMEN + crest
+    var c=document.createElement('canvas');c.width=c.height=1024;var x=c.getContext('2d');
+    var R=512;
+    var rg=x.createRadialGradient(R,R-60,40,R,R,R); rg.addColorStop(0,'#26282d');rg.addColorStop(0.6,'#141518');rg.addColorStop(1,'#0a0b0d');
+    x.fillStyle=rg;x.fillRect(0,0,1024,1024);
+    // sunburst lines
+    x.save();x.translate(R,R);x.globalAlpha=.18;
+    for(var i=0;i<120;i++){x.rotate(Math.PI*2/120);x.strokeStyle=i%2?'#3a3d44':'#1a1c20';x.lineWidth=4;x.beginPath();x.moveTo(0,40);x.lineTo(0,470);x.stroke();}
+    x.restore();
+    // minute track
+    x.save();x.translate(R,R);
+    for(var i=0;i<60;i++){x.rotate(Math.PI*2/60);x.fillStyle='#8a8f98';x.fillRect(-1.5,-470,3,i%5===0?18:8);}
+    x.restore();
+    // applied baton indices (gold)
+    x.save();x.translate(R,R);
+    for(var i=0;i<12;i++){x.rotate(Math.PI*2/12);if(i===0){x.restore();x.save();x.translate(R,R);x.rotate(Math.PI*2/12*i);}
+      x.fillStyle='#e7c873';x.shadowColor='#e7c873';x.shadowBlur=12; if(i!==0){x.fillRect(-7,-430,14,46);} x.shadowBlur=0;}
+    // double baton at 12
+    x.fillStyle='#e7c873';x.fillRect(-22,-430,12,46);x.fillRect(10,-430,12,46);
+    x.restore();
+    // wordmark
+    x.fillStyle='#e7c873';x.textAlign='center';x.font='600 58px "Playfair Display", Georgia, serif';
+    x.fillText('WATCHMEN', R, R-150);
+    x.font='400 24px "JetBrains Mono", monospace';x.fillStyle='#9a958a';
+    x.fillText('CALIBER WM-01', R, R+200);
+    // crest (stylized escapement eye)
+    x.strokeStyle='#c9a86a';x.lineWidth=4;x.beginPath();x.arc(R,R-250,26,0,Math.PI*2);x.stroke();
+    x.beginPath();x.arc(R,R-250,10,0,Math.PI*2);x.stroke();
+    for(var i=0;i<8;i++){var a=i*Math.PI/4;x.beginPath();x.moveTo(R+Math.cos(a)*26,R-250+Math.sin(a)*26);x.lineTo(R+Math.cos(a)*36,R-250+Math.sin(a)*36);x.stroke();}
+    var tex=new THREE.CanvasTexture(c); tex.anisotropy=4; tex.encoding=THREE.sRGBEncoding;
+    var dial=new THREE.Group();
+    var face=new THREE.Mesh(new THREE.CylinderGeometry(40,40,1.4,80),
+      new THREE.MeshStandardMaterial({map:tex,metalness:0.5,roughness:0.5}));
+    face.rotation.x=-Math.PI/2; // face up toward +Z after watch tilt; map on top
+    face.position.z=Z.dial;
+    // because cylinder top normal is +Y, rotate so top faces +Z (camera)
+    face.rotation.x=Math.PI/2;
+    dial.add(face);
+    addPart(dial,[0.65,0.75],{pos:{z:54},rot:{z:0.8}});
+  })();
+
+  /* ===== PHASE 7: HANDS (set to 10:10) ===== */
+  (function(){
+    function hand(len,wid,z,col,backLen){
+      var g=new THREE.Group();
+      var m=new THREE.Mesh(new THREE.BoxGeometry(wid,len,1.0), col);
+      m.position.y=len/2; g.add(m);
+      if(backLen){var b=new THREE.Mesh(new THREE.BoxGeometry(wid*0.7,backLen,1.0),col);b.position.y=-backLen/2;g.add(b);}
+      var hub=new THREE.Mesh(new THREE.CylinderGeometry(2,2,1.4,16),col);hub.rotation.x=Math.PI/2;g.add(hub);
+      g.position.z=z;
+      return g;
+    }
+    var hour=hand(20,3.4,Z.hands,goldMat()); hour.rotation.z = -(10/12*Math.PI*2) + Math.PI; // ~10 o'clock
+    var min=hand(30,2.6,Z.hands+1.2,goldMat()); min.rotation.z = -(10/60*Math.PI*2)+Math.PI; // ~ :10
+    var sec=hand(33,0.9,Z.hands+2.2,new THREE.MeshStandardMaterial({color:0xe7c873,metalness:1,roughness:.2}),9);
+    addPart(hour,[0.75,0.82],{pos:{z:48},rot:{z:hour.rotation.z-1.2}});
+    addPart(min,[0.78,0.85],{pos:{z:48},rot:{z:min.rotation.z-1.4}});
+    addPart(sec,[0.81,0.88],{pos:{z:48}},{spin:-0.9}); // sweeping seconds
+  })();
+
+  /* ===== PHASE 8: CASE, BEZEL, CRYSTAL ===== */
+  (function(){
+    // case middle (steel ring/barrel)
+    var caseMid=new THREE.Mesh(new THREE.CylinderGeometry(50,50,26,80,1,true),steel());
+    caseMid.rotation.x=Math.PI/2; caseMid.position.z=10;
+    var caseBack=new THREE.Mesh(new THREE.CylinderGeometry(50,50,3,80),steelDark());
+    caseBack.rotation.x=Math.PI/2; caseBack.position.z=-3;
+    var cg=new THREE.Group(); cg.add(caseMid,caseBack);
+    addPart(cg,[0.85,0.92],{pos:{z:70},scale:1.18});
+    // fluted/coined bezel (fine teeth)
+    var bezel=makeGear(110,52,2.0,5,46,steel());
+    bezel.position.z=Z.bezel;
+    addPart(bezel,[0.88,0.95],{pos:{z:68},rot:{z:0.5}},{spin:0.05});
+    // sapphire crystal (domed, transparent)
+    var crystal=new THREE.Mesh(new THREE.SphereGeometry(48,48,32,0,Math.PI*2,0,Math.PI*0.32),
+      new THREE.MeshStandardMaterial({color:0xbfe0ff,metalness:0,roughness:0.02,transparent:true,opacity:0.16,envMapIntensity:2.0}));
+    crystal.position.z=Z.crystal-6; crystal.scale.set(1,1,0.5);
+    addPart(crystal,[0.92,1.0],{pos:{z:60},scale:1.3});
+  })();
+
+  /* ---------- scroll progress + render ---------- */
+  var stageWrap=document.getElementById('stageWrap');
+  var progFill=document.getElementById('progFill'), progNum=document.getElementById('progNum');
+  var phaseTitle=document.getElementById('phaseTitle'), partName=document.getElementById('partName'), partSpec=document.getElementById('partSpec'), dragHint=document.getElementById('dragHint');
+
+  var phases=[
+    [0.00,'Mainplate & base','Mainplate','tol. ±0.002 mm'],
+    [0.10,'Gear train','Barrel & wheels','Ø 5.10 mm · 56t'],
+    [0.26,'Escapement & balance','Swiss lever escapement','28,800 vph'],
+    [0.40,'Jewels & screws','31 ruby jewels','synthetic corundum'],
+    [0.55,'Automatic rotor','Winding rotor','22k gold weight'],
+    [0.65,'Dial & indices','Applied baton dial','SuperLume C3'],
+    [0.75,'Hands','Hour · minute · seconds','set to 10:10'],
+    [0.85,'Case & bezel','904L steel case','100 m / 10 ATM'],
+    [0.92,'Sapphire crystal','AR-coated sapphire','2.0 mm domed'],
+    [0.99,'Caliber WM-01','Hand-assembled','no shortcuts']
+  ];
+
+  function clamp01(v){return v<0?0:v>1?1:v;}
+  function rng(p,a,b){return clamp01((p-a)/(b-a));}
+  function easeOut(t){return 1-Math.pow(1-t,3);}
+  function easeInOut(t){return t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+  function lerp(a,b,t){return a+(b-a)*t;}
+
+  var targetP=0, curP=0, dragYaw=0, dragging=false, lastX=0;
+  function computeP(){
+    if(reduce) return 1;
+    var top=stageWrap.offsetTop, h=stageWrap.offsetHeight-innerHeight;
+    return clamp01((scrollY-top)/h);
+  }
+  addEventListener('scroll',function(){ targetP=computeP(); },{passive:true});
+
+  // drag-to-inspect when assembled
+  canvas.addEventListener('pointerdown',function(e){ if(curP>0.9){dragging=true;lastX=e.clientX;} });
+  addEventListener('pointerup',function(){dragging=false;});
+  addEventListener('pointermove',function(e){ if(dragging){ dragYaw+=(e.clientX-lastX)*0.008; lastX=e.clientX; } });
+
+  function updatePart(o,p,t){
+    var w=o.userData.win, from=o.userData.from, opts=o.userData.opts;
+    var local=easeOut(rng(p,w[0],w[1]));
+    // opacity
+    o.traverse(function(m){ if(m.material){ m.material.opacity=local; } });
+    o.visible = local>0.001;
+    // position / rotation lerp from 'from' offsets to seated base
+    var bp=o.userData.basePos, br=o.userData.baseRot;
+    var fz=from.pos&&from.pos.z!=null?from.pos.z:0;
+    var fx=from.pos&&from.pos.x!=null?from.pos.x:bp.x;
+    var fy=from.pos&&from.pos.y!=null?from.pos.y:bp.y;
+    o.position.z=lerp(bp.z+fz, bp.z, local);
+    o.position.x=lerp(fx, bp.x, local);
+    o.position.y=lerp(fy, bp.y, local);
+    var frz=from.rot&&from.rot.z!=null?from.rot.z:0;
+    var extra=0, osc=0, thread=0;
+    if(opts.spin) extra = t*opts.spin*local;
+    if(opts.threadSpin) thread = (1-local)*8; // unscrew look while seating
+    if(opts.oscillate) osc = Math.sin(t*opts.oscillate.w)*opts.oscillate.amp*local;
+    o.rotation.z = lerp(br.z+frz, br.z, local) + extra + osc + thread;
+    if(from.scale!=null){ var sc=lerp(from.scale,1,local); o.scale.set(sc,sc,sc); }
+  }
+
+  function setReadout(p){
+    var ph=phases[0];
+    for(var i=0;i<phases.length;i++){ if(p>=phases[i][0]) ph=phases[i]; }
+    phaseTitle.textContent=ph[1]; partName.textContent=ph[2]; partSpec.textContent=ph[3];
+    var pct=Math.round(p*100);
+    progFill.style.height=pct+'%'; progNum.textContent=(pct<10?'0':'')+pct;
+    dragHint.style.opacity = p>0.95?'1':'0';
+  }
+
+  var clock=new THREE.Clock();
+  function frame(){
+    requestAnimationFrame(frame);
+    var t=clock.getElapsedTime();
+    curP += (targetP-curP)*0.08;        // smooth scrub
+    if(reduce) curP=1;
+    for(var i=0;i<parts.length;i++) updatePart(parts[i],curP,t);
+
+    // camera push-in + final tilt + light sweep
+    camera.position.z = lerp(150, 96, easeInOut(curP));
+    watch.rotation.x = -0.18 - 0.42*easeInOut(rng(curP,0.9,1.0));
+    watch.rotation.y = dragYaw + 0.0006*Math.sin(t*0.4);
+    var sw=rng(curP,0.93,1.0);
+    sweep.intensity = sw*2.2;
+    sweep.position.x = lerp(-90,90,(Math.sin(t*0.8)*0.5+0.5));
+    setReadout(curP);
+    renderer.render(scene,camera);
+  }
+
+  function resize(){
+    var w=canvas.clientWidth, h=canvas.clientHeight;
+    if(canvas.width!==w*Math.min(devicePixelRatio,2)||canvas.height!==h*Math.min(devicePixelRatio,2)){
+      renderer.setSize(w,h,false);
+      camera.aspect=w/h; camera.updateProjectionMatrix();
+    }
+  }
+  addEventListener('resize',resize);
+  resize(); targetP=computeP(); frame();
+  finishLoader();
+
+  /* ---------- loader fill ---------- */
+  function finishLoader(){
+    var arc=document.getElementById('loadArc'), pct=document.getElementById('loadPct'), loader=document.getElementById('loader');
+    var v=0, t0=null, dur=1300;
+    function tick(t){ if(!t0)t0=t; v=Math.min((t-t0)/dur,1);
+      var e=1-Math.pow(1-v,2);
+      arc.style.strokeDashoffset=264*(1-e); pct.textContent=Math.round(e*100)+'%';
+      if(v<1) requestAnimationFrame(tick);
+      else setTimeout(function(){loader.classList.add('done');},250);
+    }
+    requestAnimationFrame(tick);
+  }
+})();
+</script>
+</body>
+</html>

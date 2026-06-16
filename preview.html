@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Watchmen — Got Your Six.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#0a0a0b; --ink800:#121214; --ink700:#1a1a1d; --ink600:#26262b;
+    --bone:#f4f1ea; --bone-muted:#b9b4aa; --bone-faint:#7d7a73;
+    --brass:#b8956a; --brass-light:#cdac82; --brass-dark:#9a7a52;
+    --serif:"Cormorant Garamond",Georgia,serif;
+    --sans:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;scroll-padding-top:6rem}
+  body{background:var(--ink);color:var(--bone);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+  @media(min-width:1024px){.container{padding:0 2rem}}
+  .display{font-family:var(--serif);text-transform:uppercase;letter-spacing:.08em;line-height:1.05;font-weight:600}
+  .eyebrow{font-family:var(--sans);font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.25em;color:var(--brass)}
+  .quote{font-family:var(--serif);font-style:italic;color:rgba(244,241,234,.9)}
+  .muted{color:var(--bone-muted)}
+  .faint{color:var(--bone-faint)}
+  section{position:relative}
+  .pad{padding:6rem 0}
+  @media(min-width:1024px){.pad{padding:9rem 0}}
+  .alt{background:var(--ink800)}
+
+  /* buttons */
+  .btn{display:inline-flex;align-items:center;gap:.5rem;border-radius:999px;font-size:.9rem;font-weight:500;letter-spacing:.02em;padding:.85rem 1.8rem;transition:all .3s cubic-bezier(.22,1,.36,1);cursor:pointer;border:0}
+  .btn-primary{background:var(--brass);color:var(--ink)}
+  .btn-primary:hover{background:var(--brass-light);transform:translateY(-2px);box-shadow:0 8px 30px -8px rgba(184,149,106,.6)}
+  .btn-lg{padding:1.05rem 2.4rem;font-size:1rem}
+  .btn-outline{border:1px solid rgba(244,241,234,.25);color:var(--bone);background:transparent}
+  .btn-outline:hover{border-color:var(--brass);color:var(--brass)}
+
+  /* header */
+  header{position:fixed;inset:0 0 auto 0;z-index:50;transition:all .3s;border-bottom:1px solid transparent}
+  header.scrolled{background:rgba(10,10,11,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(244,241,234,.1)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:5rem}
+  .brand{display:flex;align-items:center;gap:.75rem}
+  .brand .name{font-family:var(--serif);font-size:1.15rem;text-transform:uppercase;letter-spacing:.08em}
+  .navlinks{display:none;align-items:center;gap:2rem}
+  .navlinks a{font-size:.9rem;color:var(--bone-muted);transition:color .3s}
+  .navlinks a:hover{color:var(--brass)}
+  @media(min-width:1024px){.navlinks{display:flex}}
+  .menu-btn{display:inline-flex;background:none;border:0;color:var(--bone);cursor:pointer}
+  @media(min-width:1024px){.menu-btn{display:none}}
+
+  /* hero */
+  .hero{min-height:100vh;display:flex;align-items:center;text-align:center;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:linear-gradient(to bottom,var(--ink700),var(--ink800) 50%,var(--ink))}
+  .hero-bg .dots{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:22px 22px}
+  .hero-bg .glow{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 30%,rgba(184,149,106,.12),transparent 55%)}
+  .hero-bg .fade{position:absolute;inset:0;background:linear-gradient(to top,var(--ink),rgba(10,10,11,.4),transparent)}
+  .hero h1{font-size:clamp(3rem,12vw,9rem);color:var(--bone)}
+  .hero .sub{font-family:var(--serif);font-style:italic;color:var(--brass);font-size:clamp(1.5rem,4vw,2rem);margin-top:.25rem}
+  .lede{color:var(--bone-muted);max-width:42rem;margin:2rem auto 0;font-size:1.1rem}
+  .pills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.2rem .5rem;margin-top:3.5rem;font-size:.72rem;text-transform:uppercase;letter-spacing:.2em;color:var(--bone-muted)}
+  .pills li{display:flex;align-items:center;gap:.5rem;list-style:none}
+  .pills .dot{width:4px;height:4px;border-radius:999px;background:rgba(184,149,106,.5)}
+
+  h2.sec{font-size:clamp(1.9rem,4vw,3rem);color:var(--bone)}
+  .grid2{display:grid;gap:3rem;align-items:center}
+  @media(min-width:1024px){.grid2{grid-template-columns:1fr 1fr;gap:4rem}}
+  .prose p{color:var(--bone-muted);font-size:1.1rem;margin-top:1.25rem;max-width:62ch}
+
+  /* placeholder image */
+  .ph{position:relative;display:flex;align-items:center;justify-content:center;border-radius:1rem;border:1px solid rgba(244,241,234,.1);background:linear-gradient(135deg,var(--ink700),var(--ink800),var(--ink));overflow:hidden;text-align:center}
+  .ph .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 30%,rgba(0,0,0,.5))}
+  .ph .lbl{position:relative;z-index:1;max-width:80%;color:var(--bone-muted);font-size:.9rem;padding:1rem}
+  .ph .tag{display:block;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bone-faint);margin-bottom:.5rem}
+  .a45{aspect-ratio:4/5}.a54{aspect-ratio:5/4}.a169{aspect-ratio:16/9}
+
+  /* cards */
+  .cards{display:grid;gap:1.25rem;margin-top:3.5rem}
+  .cards.exp{grid-template-columns:repeat(1,1fr)}
+  @media(min-width:640px){.cards.exp{grid-template-columns:repeat(2,1fr)}}
+  @media(min-width:1024px){.cards.exp{grid-template-columns:repeat(5,1fr)}}
+  .card{height:100%;border-radius:1rem;border:1px solid rgba(244,241,234,.1);background:var(--ink);padding:1.5rem;transition:border-color .3s}
+  .card:hover{border-color:rgba(184,149,106,.4)}
+  .ic{display:inline-flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:999px;background:rgba(184,149,106,.1);color:var(--brass);margin-bottom:1rem}
+  .card h3{font-family:var(--serif);text-transform:uppercase;letter-spacing:.04em;font-size:1.25rem;color:var(--bone)}
+  .card p{color:var(--bone-muted);font-size:.9rem;margin-top:.5rem}
+
+  .mship-grid{display:grid;gap:1rem;margin-top:2.5rem}
+  @media(min-width:640px){.mship-grid{grid-template-columns:1fr 1fr}}
+  .feat{height:100%;border-radius:.75rem;border:1px solid rgba(244,241,234,.1);background:var(--ink800);padding:1.25rem}
+  .check{display:inline-flex;align-items:center;justify-content:center;width:2.25rem;height:2.25rem;border-radius:999px;background:rgba(184,149,106,.15);color:var(--brass);margin-bottom:.75rem;font-weight:700}
+  .feat h3{font-family:var(--serif);text-transform:uppercase;font-size:1.05rem;color:var(--bone)}
+  .feat p{font-size:.85rem;color:var(--bone-muted);margin-top:.25rem}
+
+  .blist{margin-top:2rem;list-style:none}
+  .blist li{display:flex;gap:.75rem;align-items:flex-start;margin-top:.75rem;color:var(--bone-muted)}
+  .blist .c{color:var(--brass);font-weight:700;margin-top:.1rem}
+
+  .benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-top:3.5rem}
+  @media(min-width:640px){.benefits{grid-template-columns:repeat(3,1fr)}}
+  @media(min-width:1024px){.benefits{grid-template-columns:repeat(4,1fr)}}
+  .ben{display:flex;align-items:center;gap:1rem;border-radius:.75rem;border:1px solid rgba(244,241,234,.1);background:var(--ink);padding:1.1rem;transition:border-color .3s}
+  .ben:hover{border-color:rgba(184,149,106,.4)}
+  .ben .d{flex:0 0 auto;width:2.4rem;height:2.4rem;border-radius:999px;background:rgba(184,149,106,.1);color:var(--brass);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+  .ben span.t{font-size:.85rem;font-weight:500;color:var(--bone)}
+
+  /* stats */
+  .stats{border-top:1px solid rgba(244,241,234,.1);border-bottom:1px solid rgba(244,241,234,.1)}
+  .stats .row{display:grid;gap:2.5rem;padding:4rem 0}
+  @media(min-width:640px){.stats .row{grid-template-columns:repeat(3,1fr)}}
+  .stat{text-align:center}
+  .stat .v{font-family:var(--serif);font-size:clamp(3rem,6vw,4rem);color:var(--brass);line-height:1}
+  .stat .l{font-size:.72rem;text-transform:uppercase;letter-spacing:.25em;color:var(--bone-muted);margin-top:.75rem}
+
+  .center{text-align:center;max-width:48rem;margin:0 auto}
+  .pull{font-family:var(--serif);font-style:italic;font-size:clamp(1.5rem,3vw,2rem);color:rgba(244,241,234,.9);margin-top:2.5rem}
+  .bl-quote{border-left:2px solid var(--brass);padding-left:1.25rem;margin-top:2rem}
+
+  /* contact form */
+  .form{display:grid;gap:1.25rem}
+  label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:var(--bone-muted);margin-bottom:.5rem}
+  input,textarea,select{width:100%;background:var(--ink800);border:1px solid rgba(244,241,234,.15);border-radius:.5rem;color:var(--bone);padding:.8rem 1rem;font-family:inherit;font-size:.9rem}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+  .clist{margin-top:2.5rem;list-style:none;display:grid;gap:1.25rem}
+  .clist li{display:flex;align-items:center;gap:1rem}
+  .clist .d{width:2.5rem;height:2.5rem;border-radius:999px;background:rgba(184,149,106,.1);color:var(--brass);display:flex;align-items:center;justify-content:center}
+
+  /* footer */
+  footer{border-top:1px solid rgba(244,241,234,.1);background:var(--ink800)}
+  .fgrid{display:grid;gap:3rem;padding:4rem 0}
+  @media(min-width:1024px){.fgrid{grid-template-columns:1.4fr 1fr 1fr 1.2fr}}
+  .fcol h4{font-size:.72rem;text-transform:uppercase;letter-spacing:.2em;color:var(--brass);margin-bottom:1rem}
+  .fcol ul{list-style:none;display:grid;gap:.75rem}
+  .fcol a{font-size:.9rem;color:var(--bone-muted)}
+  .fcol a:hover{color:var(--brass)}
+  .social{display:flex;gap:.75rem;margin-top:1.5rem}
+  .social a{width:2.5rem;height:2.5rem;border-radius:999px;border:1px solid rgba(244,241,234,.15);display:flex;align-items:center;justify-content:center;color:var(--bone-muted)}
+  .social a:hover{border-color:var(--brass);color:var(--brass)}
+  .fbottom{display:flex;flex-direction:column;gap:1rem;align-items:center;justify-content:space-between;border-top:1px solid rgba(244,241,234,.1);padding:2rem 0;font-size:.75rem;color:var(--bone-faint)}
+  @media(min-width:640px){.fbottom{flex-direction:row}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* watch build */
+  .watch-wrap{height:320vh;background:var(--ink)}
+  .watch-sticky{position:sticky;top:0;height:100vh;display:flex;align-items:center;overflow:hidden}
+  .watch-glow{position:absolute;left:50%;top:50%;width:60vmin;height:60vmin;transform:translate(-50%,-50%);border-radius:999px;background:rgba(184,149,106,.1);filter:blur(120px);pointer-events:none}
+  .watch-grid{display:grid;gap:2.5rem;align-items:center;width:100%}
+  @media(min-width:1024px){.watch-grid{grid-template-columns:1fr 1fr}}
+  .steps{list-style:none;margin-top:2.5rem;display:grid;gap:1.25rem}
+  .step{display:flex;gap:1rem;opacity:.32;transition:opacity .3s}
+  .step.active{opacity:1}
+  .step .n{font-family:var(--serif);font-size:.9rem;color:var(--brass)}
+  .step h3{font-family:var(--serif);text-transform:uppercase;letter-spacing:.08em;font-size:1.25rem;color:var(--bone)}
+  .step p{font-size:.85rem;color:var(--bone-muted);margin-top:.15rem}
+  .watch-svg{width:auto;height:62vh;max-height:600px;display:block;margin:0 auto;filter:drop-shadow(0 30px 60px rgba(0,0,0,.6))}
+  .wp{opacity:0}
+  @media(prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal{opacity:1;transform:none;transition:none}
+    .wp{opacity:1!important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header id="hdr">
+  <div class="container nav">
+    <a class="brand" href="#top" aria-label="The Watchmen — home">
+      <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <circle cx="20" cy="20" r="18" stroke="#b8956a" stroke-width="1.5"/>
+        <line x1="20" y1="4" x2="20" y2="8" stroke="#b8956a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="36" y1="20" x2="32" y2="20" stroke="#b8956a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="4" y1="20" x2="8" y2="20" stroke="#b8956a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="20" y1="32" x2="20" y2="37" stroke="#cdac82" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="20" y1="20" x2="20" y2="29" stroke="#f4f1ea" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="20" y1="20" x2="26" y2="20" stroke="#f4f1ea" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="1.6" fill="#cdac82"/>
+      </svg>
+      <span class="name">The Watchmen</span>
+    </a>
+    <nav class="navlinks">
+      <a href="#about">About</a>
+      <a href="#experiences">Experiences</a>
+      <a href="#membership">Membership</a>
+      <a href="#story">The Story</a>
+      <a href="#app">App</a>
+      <a href="#contact">Contact</a>
+      <a href="#apply-cta" class="btn btn-primary" style="padding:.6rem 1.3rem;font-size:.8rem">Apply Now</a>
+    </nav>
+    <button class="menu-btn" onclick="document.getElementById('apply-cta').scrollIntoView()">Menu</button>
+  </div>
+</header>
+
+<main>
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="hero-bg"><span class="dots"></span><span class="glow"></span><span class="fade"></span></div>
+  <div class="container" style="position:relative;z-index:1;padding-top:8rem;padding-bottom:8rem">
+    <p class="eyebrow reveal" style="margin-bottom:1.5rem">Tampa Bay Brotherhood</p>
+    <h1 class="display reveal">The Watchmen</h1>
+    <p class="sub reveal">Got Your Six.</p>
+    <p class="lede reveal">A private brotherhood in Tampa Bay built on real friendships, shared leadership, and the kind of growth that outlasts us. We gather men who are done doing life alone — and we stand at each other's six. Faith, family, work, legacy. This is the circle that has your back.</p>
+    <div class="reveal" style="margin-top:2.5rem"><a href="#apply-cta" class="btn btn-primary btn-lg">Apply Now</a></div>
+    <ul class="pills reveal">
+      <li>Faith</li><li><span class="dot"></span>Leadership</li><li><span class="dot"></span>Community</li><li><span class="dot"></span>Growth</li><li><span class="dot"></span>Legacy</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ VISION ============ -->
+<section class="pad" id="vision">
+  <div class="container grid2">
+    <div class="reveal">
+      <p class="eyebrow" style="margin-bottom:1rem">The Vision</p>
+      <h2 class="display sec">Building The Strongest Brotherhood In Tampa Bay.</h2>
+    </div>
+    <div class="prose reveal">
+      <p>We're connecting 1,000+ men across Tampa Bay through genuine relationships — not networking, not a follower count. The kind of friendships you can call at 2 a.m.</p>
+      <p>From St. Pete to the bay, we're building a trusted circle of men who show up for one another: in business, in fatherhood, in faith, and in the ordinary weeks where most brotherhoods quietly fade.</p>
+      <p>The mission is simple and stubborn — make sure no good man in this city has to carry his weight alone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHO WE ARE ============ -->
+<section class="pad" id="about">
+  <div class="container grid2">
+    <div class="reveal">
+      <p class="eyebrow" style="margin-bottom:1rem">Who We Are</p>
+      <h2 class="display sec">More Than A Club.</h2>
+      <div class="prose">
+        <p>Entrepreneurs and executives. Tradesmen and creatives. Fathers, founders, retirees, and the guy who just moved to town and wants to build something real.</p>
+        <p>What we share isn't a tax bracket or a title — it's the decision to stop drifting and start belonging. Once you're in, you're in. We don't do transactional. We do brotherhood.</p>
+      </div>
+    </div>
+    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Members gathered in conversation at a Watchmen event</span></div></div>
+  </div>
+</section>
+
+<!-- ============ GOT YOUR 6 ============ -->
+<section class="pad alt" id="gotyour6">
+  <div class="container grid2">
+    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Two members embracing at a Watchmen gathering</span></div></div>
+    <div>
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">Got Your 6</p>
+        <h2 class="display sec">You Weren't Built To Do Life Alone.</h2>
+      </div>
+      <div class="prose reveal">
+        <p>"Got your six" comes from the military. Your six o'clock is the position directly behind you — your blind spot, the angle you can't watch yourself. So a teammate watches it for you. They've got your six.</p>
+        <p>That's the whole promise of this brotherhood. We stand behind each other where it's hard to see: the marriage that's straining, the business that's slipping, the season nobody's posting about. You cover a brother's blind spot; he covers yours.</p>
+      </div>
+      <div class="reveal bl-quote"><p class="quote" style="font-size:1.6rem">"Because no man wins alone."</p></div>
+      <div class="reveal" style="margin-top:2rem"><a href="#apply-cta" class="btn btn-outline">Apply Now</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WATCH BUILD ============ -->
+<section class="watch-wrap" id="craft" aria-label="The making of a timepiece">
+  <div class="watch-sticky">
+    <div class="watch-glow"></div>
+    <div class="container watch-grid">
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">The Craft</p>
+        <h2 class="display sec">Built Piece By Piece.</h2>
+        <p class="muted" style="margin-top:1.25rem;max-width:30rem">Brotherhood isn't assembled in a day. It's machined slowly, part by part, until it can be trusted with your time. Scroll, and watch it come together.</p>
+        <ol class="steps" id="steps">
+          <li class="step" data-step="0"><span class="n">01</span><div><h3>The Case</h3><p>Where it all begins — a frame built to last.</p></div></li>
+          <li class="step" data-step="1"><span class="n">02</span><div><h3>The Dial</h3><p>A face you can read in any light.</p></div></li>
+          <li class="step" data-step="2"><span class="n">03</span><div><h3>The Indices</h3><p>Every hour accounted for. Nothing missed.</p></div></li>
+          <li class="step" data-step="3"><span class="n">04</span><div><h3>The Hands</h3><p>Pointed at your six — the angle you can't watch alone.</p></div></li>
+          <li class="step" data-step="4"><span class="n">05</span><div><h3>The Strap</h3><p>Finished to be worn for a lifetime.</p></div></li>
+        </ol>
+      </div>
+      <div>
+        <svg class="watch-svg" viewBox="0 0 400 520" role="img" aria-label="A wristwatch assembling itself, finishing at six o'clock">
+          <defs>
+            <linearGradient id="brushed" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#cdac82"/><stop offset="45%" stop-color="#9a7a52"/>
+              <stop offset="55%" stop-color="#b8956a"/><stop offset="100%" stop-color="#7a5f3e"/>
+            </linearGradient>
+            <radialGradient id="dialFace" cx="50%" cy="42%" r="70%">
+              <stop offset="0%" stop-color="#1a1a1d"/><stop offset="70%" stop-color="#121214"/><stop offset="100%" stop-color="#09090a"/>
+            </radialGradient>
+            <linearGradient id="strapGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#26262b"/><stop offset="100%" stop-color="#141416"/>
+            </linearGradient>
+          </defs>
+          <!-- straps -->
+          <g class="wp" id="strapTop">
+            <path d="M150 150 L138 40 Q138 22 156 22 L244 22 Q262 22 262 40 L250 150 Z" fill="url(#strapGrad)" stroke="#2e2e34" stroke-width="1.5"/>
+            <line x1="158" y1="50" x2="242" y2="50" stroke="#b8956a" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+          </g>
+          <g class="wp" id="strapBot">
+            <path d="M150 330 L138 440 Q138 458 156 458 L244 458 Q262 458 262 440 L250 330 Z" fill="url(#strapGrad)" stroke="#2e2e34" stroke-width="1.5"/>
+            <line x1="158" y1="430" x2="242" y2="430" stroke="#b8956a" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+          </g>
+          <!-- crown -->
+          <g class="wp" id="crown">
+            <rect x="320" y="230" width="18" height="20" rx="3" fill="url(#brushed)"/>
+            <line x1="324" y1="234" x2="324" y2="246" stroke="#7a5f3e" stroke-width="1"/>
+            <line x1="330" y1="234" x2="330" y2="246" stroke="#7a5f3e" stroke-width="1"/>
+          </g>
+          <!-- outer case (draws) -->
+          <circle id="caseRing" cx="200" cy="240" r="124" fill="none" stroke="url(#brushed)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 200 240)"/>
+          <!-- bezel -->
+          <circle class="wp" id="bezel" cx="200" cy="240" r="112" fill="none" stroke="#26262b" stroke-width="6" style="transform-origin:200px 240px"/>
+          <!-- dial -->
+          <circle class="wp" id="dial" cx="200" cy="240" r="104" fill="url(#dialFace)" stroke="#1f1f23" stroke-width="1" style="transform-origin:200px 240px"/>
+          <!-- indices -->
+          <g class="wp" id="indices" style="transform-origin:200px 240px"></g>
+          <!-- six marker -->
+          <g class="wp" id="six" style="transform-origin:200px 324px">
+            <line x1="200" y1="332" x2="200" y2="312" stroke="#cdac82" stroke-width="5" stroke-linecap="round"/>
+            <text x="200" y="306" text-anchor="middle" fill="#cdac82" font-size="16" font-family="Georgia,serif" font-style="italic">6</text>
+          </g>
+          <!-- hands (draw from center) -->
+          <line id="hourHand" x1="200" y1="240" x2="200" y2="310" stroke="#f4f1ea" stroke-width="5" stroke-linecap="round"/>
+          <line id="minHand" x1="200" y1="240" x2="200" y2="144" stroke="#f4f1ea" stroke-width="3" stroke-linecap="round"/>
+          <circle class="wp" id="cap" cx="200" cy="240" r="6" fill="#cdac82"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MEMBERSHIP ============ -->
+<section class="pad" id="membership">
+  <div class="container grid2">
+    <div>
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">Membership</p>
+        <h2 class="display sec">Membership Is Free. Brotherhood Is Earned.</h2>
+        <p class="muted" style="margin-top:1.5rem;max-width:40rem;font-size:1.1rem">There's no paywall and no membership fee. But every applicant is personally vetted — because the only thing that protects a brotherhood is who you let in.</p>
+      </div>
+      <div class="mship-grid">
+        <div class="feat reveal"><span class="check">✓</span><h3>You can't buy your way in</h3><p>No tier, no upgrade, no founder's package. Money doesn't move you up the list.</p></div>
+        <div class="feat reveal"><span class="check">✓</span><h3>Vetted by our advisory team</h3><p>Every application is read and reviewed by real members who protect the culture.</p></div>
+        <div class="feat reveal"><span class="check">✓</span><h3>Application is 100% free</h3><p>Applying costs nothing but honesty about why you want in.</p></div>
+        <div class="feat reveal"><span class="check">✓</span><h3>Built for lasting relationships</h3><p>We're not optimizing for size. We're optimizing for friendships that last decades.</p></div>
+      </div>
+      <div class="reveal" style="margin-top:2.5rem"><a href="#apply-cta" class="btn btn-primary">Start Your Application</a></div>
+    </div>
+    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Close detail of a luxury watch worn by a member</span></div></div>
+  </div>
+</section>
+
+<!-- ============ EXPERIENCES ============ -->
+<section class="pad alt" id="experiences">
+  <div class="container">
+    <div class="reveal" style="max-width:48rem">
+      <p class="eyebrow" style="margin-bottom:1rem">What To Expect</p>
+      <h2 class="display sec">Real Friendships Are Built Through Shared Experiences.</h2>
+    </div>
+    <div class="cards exp">
+      <div class="card reveal"><span class="ic">👥</span><h3>Connect Nights</h3><p>Quarterly gatherings in unique Tampa Bay locations — the room where new friendships start.</p></div>
+      <div class="card reveal"><span class="ic">🍽️</span><h3>Dinner for 6</h3><p>Monthly curated dinners that put you at the table with exactly the right men.</p></div>
+      <div class="card reveal"><span class="ic">🏆</span><h3>Sports</h3><p>Golf, fishing, pickleball, workouts, and fitness challenges. Competition that builds bonds.</p></div>
+      <div class="card reveal"><span class="ic">✈️</span><h3>Retreats &amp; Trips</h3><p>Weekend retreats, ski trips, Formula One weekends, and travel built around brotherhood.</p></div>
+      <div class="card reveal"><span class="ic">⚓</span><h3>Yacht Nights</h3><p>Water-based gatherings built on conversation, connection, and the Tampa Bay sunset.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ APP ============ -->
+<section class="pad" id="app">
+  <div class="container grid2">
+    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Members connecting at a Watchmen event</span></div></div>
+    <div>
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">The Watchman App</p>
+        <h2 class="display sec">Stay Connected Between Events.</h2>
+        <p class="muted" style="margin-top:1.5rem;max-width:40rem;font-size:1.1rem">Brotherhood doesn't pause between gatherings. The Watchman app is a private space to stay close throughout the week — so the connection you build in person keeps going online.</p>
+      </div>
+      <ul class="blist reveal">
+        <li><span class="c">✓</span>Communicate with other members</li>
+        <li><span class="c">✓</span>Join groups and conversations</li>
+        <li><span class="c">✓</span>RSVP for upcoming events</li>
+        <li><span class="c">✓</span>Build friendships beyond in-person events</li>
+        <li><span class="c">✓</span>Access exclusive member opportunities</li>
+      </ul>
+      <div class="reveal" style="margin-top:2.5rem">
+        <a href="#apply-cta" class="btn btn-primary"> Download on the App Store</a>
+        <p class="faint" style="font-size:.78rem;margin-top:.75rem;max-width:26rem">The Watchman app is in App Store review. Apply now and we'll get you access the moment it goes live.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BENEFITS ============ -->
+<section class="pad alt" id="benefits">
+  <div class="container">
+    <div class="reveal" style="max-width:48rem">
+      <p class="eyebrow" style="margin-bottom:1rem">Membership Benefits</p>
+      <h2 class="display sec">What You Gain.</h2>
+    </div>
+    <div class="benefits">
+      <div class="ben reveal"><span class="d">🤝</span><span class="t">Real Brotherhood</span></div>
+      <div class="ben reveal"><span class="d">🔒</span><span class="t">Private Member Community</span></div>
+      <div class="ben reveal"><span class="d">📅</span><span class="t">Exclusive Events</span></div>
+      <div class="ben reveal"><span class="d">🗺️</span><span class="t">Member-Only Trips</span></div>
+      <div class="ben reveal"><span class="d">🔗</span><span class="t">Networking Opportunities</span></div>
+      <div class="ben reveal"><span class="d">💼</span><span class="t">Business Connections</span></div>
+      <div class="ben reveal"><span class="d">🎂</span><span class="t">Birthday Celebrations</span></div>
+      <div class="ben reveal"><span class="d">📱</span><span class="t">The Watchman App</span></div>
+      <div class="ben reveal"><span class="d">🏷️</span><span class="t">Local Brand Discounts</span></div>
+      <div class="ben reveal"><span class="d">🏋️</span><span class="t">Fitness + Sports</span></div>
+      <div class="ben reveal"><span class="d">❤️</span><span class="t">Philanthropy Opportunities</span></div>
+      <div class="ben reveal"><span class="d">∞</span><span class="t">Lifelong Friendships</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section class="stats">
+  <div class="container row">
+    <div class="stat reveal"><div class="v" data-count="75" data-suffix="+">0</div><div class="l">Members</div></div>
+    <div class="stat reveal"><div class="v">Tampa Bay</div><div class="l">Strong</div></div>
+    <div class="stat reveal"><div class="v">Mission</div><div class="l">Driven</div></div>
+  </div>
+</section>
+
+<!-- ============ FUND ============ -->
+<section class="pad" id="fund">
+  <div class="container center">
+    <div class="reveal">
+      <p class="eyebrow" style="margin-bottom:1rem">The Watchman Fund</p>
+      <h2 class="display sec">Impact Matters.</h2>
+    </div>
+    <div class="prose reveal" style="margin-top:1.5rem">
+      <p style="margin-left:auto;margin-right:auto">A strong brotherhood owes something to the city that raised it. The Watchman Fund channels our collective time, money, and muscle into local partnerships that move the needle for Tampa Bay.</p>
+      <p style="margin-left:auto;margin-right:auto">Volunteer days, family support, and causes our members care about — when we act together, a circle of good men becomes a force for good in the community.</p>
+    </div>
+    <p class="pull reveal">"Strong men build strong communities."</p>
+  </div>
+</section>
+
+<!-- ============ STORY ============ -->
+<section class="pad alt" id="story">
+  <div class="container grid2">
+    <div class="reveal"><div class="ph a54"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>A founder speaking to a gathering of members</span></div></div>
+    <div>
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">The Story</p>
+        <h2 class="display sec">How It Started.</h2>
+        <p class="muted" style="margin-top:1.5rem;max-width:40rem;font-size:1.1rem">The Watchmen started small — a few men who were tired of surface-level and decided to build something real. The mission hasn't changed since: help men build true friendships and make sure none of us do life alone.</p>
+      </div>
+      <div class="reveal" style="margin-top:2rem"><a href="#" class="quote" style="font-size:1.25rem;text-transform:uppercase;letter-spacing:.08em;color:var(--brass)">Read the Story →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="pad" id="apply-cta" style="overflow:hidden">
+  <div class="watch-glow"></div>
+  <div class="container center" style="position:relative">
+    <h2 class="display reveal" style="font-size:clamp(2.5rem,6vw,4rem)">Find Your People.</h2>
+    <p class="lede reveal">The right people change everything — your decisions, your seasons, your odds. You don't have to do life alone.</p>
+    <div class="reveal" style="margin-top:2.5rem"><a href="#contact" class="btn btn-primary btn-lg">Apply Now</a></div>
+    <p class="faint reveal" style="font-size:.78rem;margin-top:1rem;max-width:28rem;margin-left:auto;margin-right:auto">Applications are reviewed intentionally to protect the culture of the brotherhood.</p>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="pad alt" id="contact">
+  <div class="container grid2" style="align-items:start">
+    <div>
+      <div class="reveal">
+        <p class="eyebrow" style="margin-bottom:1rem">Get In Touch</p>
+        <h2 class="display sec">Reach Out To The Brotherhood</h2>
+        <p class="muted" style="margin-top:1.5rem;max-width:36rem;font-size:1.1rem">Questions about membership, events, or partnerships? Send us a note — a real member reads every message.</p>
+      </div>
+      <ul class="clist reveal">
+        <li><span class="d">✉️</span><a href="mailto:hello@thewatchmen.com">hello@thewatchmen.com</a></li>
+        <li><span class="d">📍</span><span>St. Petersburg, Florida</span></li>
+        <li><span class="d">📷</span><a href="#">Instagram</a></li>
+      </ul>
+    </div>
+    <form class="form reveal" onsubmit="event.preventDefault();this.innerHTML='<div style=&quot;border:1px solid rgba(184,149,106,.3);background:var(--ink800);border-radius:1rem;padding:2rem&quot;><p style=&quot;font-family:var(--serif);font-size:1.5rem;color:var(--bone)&quot;>Thank you.</p><p class=muted style=&quot;margin-top:.5rem&quot;>Your message has been received. We&#39;ll be in touch soon.</p></div>'">
+      <div><label>Name *</label><input required placeholder=""></div>
+      <div><label>Email *</label><input type="email" required></div>
+      <div><label>Phone <span class="faint" style="text-transform:none;letter-spacing:0">(optional)</span></label><input type="tel" placeholder="(555) 123-4567"></div>
+      <div><label>Message *</label><textarea rows="5" required></textarea></div>
+      <div><button class="btn btn-primary" type="submit">Send Message</button>
+        <p class="faint" style="font-size:.78rem;margin-top:.75rem">We respond personally, usually within a couple of days.</p>
+      </div>
+    </form>
+  </div>
+</section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="fgrid">
+      <div>
+        <div class="brand"><span class="name">The Watchmen</span></div>
+        <p class="quote" style="color:var(--brass);font-size:1rem;margin-top:.5rem">Got Your Six</p>
+        <p class="faint" style="font-size:.85rem;margin-top:1.5rem;max-width:18rem">A private brotherhood in Tampa Bay for men who refuse to do life alone.</p>
+        <div class="social"><a href="#">IG</a><a href="#">FB</a><a href="#">YT</a></div>
+      </div>
+      <div class="fcol"><h4>Explore</h4><ul><li><a href="#about">About</a></li><li><a href="#experiences">Experiences</a></li><li><a href="#story">The Story</a></li><li><a href="#membership">Membership</a></li></ul></div>
+      <div class="fcol"><h4>Connect</h4><ul><li><a href="#app">App</a></li><li><a href="#contact">Contact</a></li><li><a href="#apply-cta">Apply Now</a></li></ul></div>
+      <div class="fcol"><h4>Scripture</h4><p class="quote" style="font-size:1.1rem;color:rgba(244,241,234,.8)">"If either of them falls down, one can help the other up."</p><p class="faint" style="font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;margin-top:.75rem">Ecclesiastes 4:10</p></div>
+    </div>
+    <div class="fbottom">
+      <p>© <span id="yr"></span> The Watchman. All Rights Reserved.</p>
+      <p>Website Design by <a href="https://skyway.media" style="color:var(--bone-muted)">Skyway.Media</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* sticky header */
+  var hdr = document.getElementById('hdr');
+  addEventListener('scroll', function(){ hdr.classList.toggle('scrolled', scrollY > 24); }, {passive:true});
+
+  /* reveal on scroll */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.12, rootMargin:'0px 0px -10% 0px'});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  /* count-up */
+  document.querySelectorAll('[data-count]').forEach(function(el){
+    var co = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(!e.isIntersecting) return; co.unobserve(el);
+        var target=+el.dataset.count, sfx=el.dataset.suffix||'', t0=null;
+        if(reduce){ el.textContent=target+sfx; return; }
+        function tick(t){ if(!t0)t0=t; var p=Math.min((t-t0)/1400,1); el.textContent=Math.round(p*target)+sfx; if(p<1)requestAnimationFrame(tick); }
+        requestAnimationFrame(tick);
+      });
+    },{threshold:.5});
+    co.observe(el);
+  });
+
+  /* build the 11 hour indices (skip 6) */
+  (function(){
+    var g=document.getElementById('indices'), C=200, Y=240, NS='http://www.w3.org/2000/svg';
+    for(var i=0;i<12;i++){ if(i===6) continue;
+      var a=(i/12)*Math.PI*2 - Math.PI/2, r1=92, r2=(i%3===0)?78:84;
+      var ln=document.createElementNS(NS,'line');
+      ln.setAttribute('x1',C+Math.cos(a)*r1); ln.setAttribute('y1',Y+Math.sin(a)*r1);
+      ln.setAttribute('x2',C+Math.cos(a)*r2); ln.setAttribute('y2',Y+Math.sin(a)*r2);
+      ln.setAttribute('stroke','#b9b4aa'); ln.setAttribute('stroke-linecap','round');
+      ln.setAttribute('stroke-width',(i%3===0)?3:1.5); g.appendChild(ln);
+    }
+  })();
+
+  /* prep "draw" parts with dash offsets */
+  function prepDraw(el){ var len=el.getTotalLength(); el.style.strokeDasharray=len; el.style.strokeDashoffset=reduce?0:len; return len; }
+  var caseRing=document.getElementById('caseRing'), caseLen=prepDraw(caseRing);
+  var hourHand=document.getElementById('hourHand'), hourLen=prepDraw(hourHand);
+  var minHand=document.getElementById('minHand'), minLen=prepDraw(minHand);
+  if(reduce){ document.querySelectorAll('.wp').forEach(function(e){e.style.opacity=1;}); }
+
+  /* scroll-driven assembly */
+  var wrap=document.getElementById('craft');
+  function clamp01(v){return v<0?0:v>1?1:v;}
+  function range(p,a,b){return clamp01((p-a)/(b-a));}
+  function setOS(id,o,s){var el=document.getElementById(id); el.style.opacity=o; if(s!=null)el.style.transform='scale('+s+')';}
+
+  function onScroll(){
+    if(reduce) return;
+    var rect=wrap.getBoundingClientRect();
+    var total=wrap.offsetHeight - innerHeight;
+    var p=clamp01((-rect.top)/total);
+
+    /* case draws */
+    caseRing.style.opacity = range(p,0,.06);
+    caseRing.style.strokeDashoffset = caseLen*(1-range(p,0,.18));
+    /* bezel / dial */
+    setOS('bezel', range(p,.16,.26), 0.6+0.4*range(p,.16,.26));
+    setOS('dial',  range(p,.26,.38), 0.55+0.45*range(p,.26,.38));
+    /* indices */
+    setOS('indices', range(p,.38,.5), 0.85+0.15*range(p,.38,.5));
+    /* six */
+    setOS('six', range(p,.48,.56), 0.3+0.7*range(p,.48,.56));
+    /* hands draw */
+    var h=range(p,.56,.68); hourHand.style.opacity=h; hourHand.style.strokeDashoffset=hourLen*(1-h);
+    var m=range(p,.66,.78); minHand.style.opacity=m; minHand.style.strokeDashoffset=minLen*(1-m);
+    document.getElementById('cap').style.opacity=range(p,.76,.82);
+    /* crown */
+    var c=range(p,.78,.86); var crown=document.getElementById('crown'); crown.style.opacity=c; crown.style.transform='translateX('+(14*(1-c))+'px)';
+    /* straps */
+    var st=range(p,.84,.96);
+    var sT=document.getElementById('strapTop'); sT.style.opacity=st; sT.style.transform='translateY('+(-34*(1-st))+'px)';
+    var sB=document.getElementById('strapBot'); sB.style.opacity=st; sB.style.transform='translateY('+(34*(1-st))+'px)';
+
+    /* active build step */
+    var idx=Math.min(4,Math.floor(p*5));
+    document.querySelectorAll('.step').forEach(function(s){ s.classList.toggle('active', +s.dataset.step===idx); });
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+  addEventListener('resize', onScroll);
+  onScroll();
+</script>
+</body>
+</html>
