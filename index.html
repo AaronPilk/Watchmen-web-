@@ -237,7 +237,7 @@
     <p class="sub reveal">Got Your Six. — for men who refuse to do life alone.</p>
     <div class="cta-row reveal">
       <a href="#apply" class="btn btn-gold">Apply Now</a>
-      <a href="#about" class="btn btn-outline">Discover the Brotherhood</a>
+      <a href="#vision" id="discoverBtn" class="btn btn-outline">Discover the Brotherhood</a>
     </div>
     <ul class="pills reveal"><li>Faith</li><li><span class="dot"></span>Leadership</li><li><span class="dot"></span>Community</li><li><span class="dot"></span>Growth</li><li><span class="dot"></span>Legacy</li></ul>
   </div>
@@ -492,6 +492,7 @@
 (function(){
   "use strict";
   document.getElementById('yr').textContent = new Date().getFullYear();
+  (function(){var d=document.getElementById('discoverBtn');if(d)d.addEventListener('click',function(e){e.preventDefault();var t=document.getElementById('vision');if(t)window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-8,behavior:'auto'});});})();
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   var hdr = document.getElementById('hdr');
