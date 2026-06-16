@@ -7,7 +7,7 @@
 <meta name="description" content="A private, invite-only brotherhood for men in Tampa Bay who refuse to do life alone. Membership is free. Brotherhood is earned. Apply now." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Cormorant+Garamond:wght@300;400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root{
     --bg:#08090a; --panel:#0e0f11; --panel2:#121316;
@@ -15,7 +15,7 @@
     --gold:#c9a86a; --gold-bright:#e7c873;
     --text:#f4f0e6; --muted:#9a958a; --faint:#6c6a64;
     --sapphire:#3a6ea5;
-    --serif:"Playfair Display",Georgia,serif;--serif-soft:"Playfair Display",Georgia,serif;
+    --serif:"Playfair Display",Georgia,serif;--serif-soft:"Playfair Display",Georgia,serif;--serif-thin:"Cormorant Garamond",Georgia,serif;
     --sans:"Jost","Helvetica Neue",Arial,sans-serif;
     --mono:"Jost","Helvetica Neue",Arial,sans-serif;
   }
@@ -83,7 +83,7 @@
   .pills .dot{width:3px;height:3px;border-radius:999px;background:var(--gold)}
   .scrollcue{position:absolute;bottom:1.8rem;left:50%;transform:translateX(-50%);z-index:2;font-family:var(--mono);font-size:.58rem;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:.5rem}
   .scrollcue .line{width:1px;height:42px;background:linear-gradient(var(--gold),transparent);animation:pulse 2.4s ease-in-out infinite}
-  @keyframes pulse{0%,100%{opacity:.3;transform:scaleY(.7)}50%{opacity:1;transform:scaleY(1)}}@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+  @keyframes pulse{0%,100%{opacity:.3;transform:scaleY(.7)}50%{opacity:1;transform:scaleY(1)}}@keyframes floaty{0%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(16px,-44px) rotate(8deg)}100%{transform:translate(0,0) rotate(-8deg)}}
 
   /* watch assembly stage */
   #stageWrap{position:relative;height:480vh}
@@ -113,7 +113,7 @@
   .ph .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.5))}
   .ph .lbl{position:relative;z-index:1;max-width:78%;color:var(--muted);font-size:.85rem;padding:1rem}
   .ph .tag{display:block;font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);margin-bottom:.5rem}
-  .a45{aspect-ratio:4/3}.a54{aspect-ratio:5/4}.a169{aspect-ratio:16/9}.grid2 .ph{max-width:460px;width:100%;margin-left:auto;margin-right:auto}@media(max-width:640px){.ph{max-height:280px}}
+  .phimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:2}.a45{aspect-ratio:4/3}.a54{aspect-ratio:5/4}.a169{aspect-ratio:16/9}.grid2 .ph{max-width:460px;width:100%;margin-left:auto;margin-right:auto}@media(max-width:640px){.ph{max-height:280px}}
 
   /* experience cards */
   .cards{display:grid;gap:1.1rem;margin-top:3.4rem;grid-template-columns:1fr}
@@ -287,14 +287,14 @@
         <p>What we share isn't a tax bracket or a title — it's the decision to stop drifting and start belonging. Once you're in, you're in. We don't do transactional. We do brotherhood.</p>
       </div>
     </div>
-    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Businessmen networking at a Watchmen Connect Night</span></div></div>
+    <div class="reveal"><div class="ph a45"><img class="phimg" src="assets/networking-1.jpg" alt="Businessmen networking at a Watchmen Connect Night" loading="lazy" onerror="this.remove()"><span class="vig"></span><span class="lbl"><span class="tag">Add photo → assets/networking-1.jpg</span>Businessmen networking at a Watchmen Connect Night</span></div></div>
   </div>
 </section>
 
 <!-- GOT YOUR 6 -->
 <section class="pad" id="gotyour6">
   <div class="wrap grid2">
-    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Businessmen connecting over dinner</span></div></div>
+    <div class="reveal"><div class="ph a45"><img class="phimg" src="assets/networking-2.jpg" alt="Businessmen connecting over dinner" loading="lazy" onerror="this.remove()"><span class="vig"></span><span class="lbl"><span class="tag">Add photo → assets/networking-2.jpg</span>Businessmen connecting over dinner</span></div></div>
     <div>
       <div class="reveal">
         <p class="eyebrow mt-eg">Got Your 6</p>
@@ -343,7 +343,7 @@
       </div>
       <div class="reveal" style="margin-top:2.2rem"><a href="#apply" class="btn btn-gold">Start Your Application</a></div>
     </div>
-    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo</span>Members networking at a private dinner</span></div></div>
+    <div class="reveal"><div class="ph a45"><img class="phimg" src="assets/networking-3.jpg" alt="Members networking at a private dinner" loading="lazy" onerror="this.remove()"><span class="vig"></span><span class="lbl"><span class="tag">Add photo → assets/networking-3.jpg</span>Members networking at a private dinner</span></div></div>
   </div>
 </section>
 
@@ -359,7 +359,7 @@
 <!-- THE APP -->
 <section class="pad" id="app">
   <div class="wrap grid2">
-    <div class="reveal"><div class="ph a45"><span class="vig"></span><span class="lbl"><span class="tag">Photo / App Mockup</span>Members networking, staying connected on the app</span></div></div>
+    <div class="reveal"><div class="ph a45"><img class="phimg" src="assets/app-preview.jpg" alt="Members networking, staying connected on the app" loading="lazy" onerror="this.remove()"><span class="vig"></span><span class="lbl"><span class="tag">Add photo → assets/app-preview.jpg</span>Members networking, staying connected on the app</span></div></div>
     <div>
       <div class="reveal">
         <p class="eyebrow mt-eg">The Watchman App</p>
@@ -536,7 +536,7 @@
     function gearSVG(s){return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><circle cx="50" cy="50" r="20"/><circle cx="50" cy="50" r="6"/>'+Array.from({length:10}).map(function(_,i){var a=i*36*Math.PI/180;return '<line x1="'+(50+Math.cos(a)*20)+'" y1="'+(50+Math.sin(a)*20)+'" x2="'+(50+Math.cos(a)*30)+'" y2="'+(50+Math.sin(a)*30)+'"/>';}).join('')+'</svg>';}
     [[170,'6%','14%',.05,0],[250,'79%','18%',.08,1.1],[130,'11%','66%',.06,.6],[200,'84%','68%',.07,2.0],[95,'45%','8%',.04,1.5],[115,'50%','82%',.05,.9]].forEach(function(d){
       var el=document.createElement('div');el.style.cssText='position:absolute;left:'+d[1]+';top:'+d[2]+';';el.dataset.sp=d[3];
-      var sx=document.createElement('span');sx.textContent='6';sx.style.cssText='display:block;font-family:var(--serif);font-weight:600;line-height:1;color:var(--gold);opacity:.1;font-size:'+d[0]+'px;animation:floaty '+(7+d[4]*1.3)+'s ease-in-out '+d[4]+'s infinite';
+      var sx=document.createElement('span');sx.textContent='6';sx.style.cssText='display:block;font-family:var(--serif-thin);font-weight:300;line-height:1;color:var(--gold);opacity:.14;font-size:'+d[0]+'px;animation:floaty '+(6+d[4]*1.1)+'s ease-in-out '+d[4]+'s infinite';
       el.appendChild(sx);box.appendChild(el);
     });
     if(!reduce)addEventListener('scroll',function(){var y=scrollY;box.querySelectorAll('div').forEach(function(el){el.style.transform='translateY('+(y*el.dataset.sp*-1)+'px)';});},{passive:true});
